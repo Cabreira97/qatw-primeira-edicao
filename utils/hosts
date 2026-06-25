@@ -4,21 +4,21 @@
 # -------------------------
 # Projeto Paybank
 # -------------------------
-127.0.0.1   paybank-ms-auth         # Microserviço de autenticação (paybank-ms-auth)
+127.0.0.1   paybank-ms-auth         # Microserviço de autenticação (paybank-ms-auth) - porta 93333
 127.0.0.1   paybank-ms-email        # Microserviço de e-mail (paybank-ms-email)
-127.0.0.1   paybank-mf-auth         # Microfrontend de autenticação (paybank-mf-auth)
+127.0.0.1   paybank-mf-auth         # Microfrontend de autenticação (paybank-mf-auth) - porta 93000
 
 # -------------------------
 # Banco de Dados
 # -------------------------
-127.0.0.1   paybank-db              # Banco de dados PostgreSQL (paybank-db)
-127.0.0.1   paybank-dbadm           # PgAdmin (paybank-dbadm) - Gerenciamento do PostgreSQL
+127.0.0.1   paybank-db              # Banco de dados PostgreSQL (paybank-db) - porta 95432
+127.0.0.1   paybank-dbadm           # PgAdmin (paybank-dbadm) - Gerenciamento do PostgreSQL - porta 19543
 
 # -------------------------
 # Redis
 # -------------------------
-127.0.0.1   paybank-redis           # Serviço de cache e filas Redis (paybank-redis)
-127.0.0.1   paybank-redisadm        # RedisInsight (paybank-redisadm) - Interface de gerenciamento do Redis
+127.0.0.1   paybank-redis           # Serviço de cache e filas Redis (paybank-redis) - porta 96379
+127.0.0.1   paybank-redisadm        # RedisInsight (paybank-redisadm) - Interface de gerenciamento do Redis - porta 95540
 
 # -------------------------
 # Jenkins
