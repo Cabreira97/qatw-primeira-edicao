@@ -15,7 +15,14 @@ services:
       - "5432:5432"                       # Mapeamento da porta do banco de dados
     restart: always                       # Reinicia o serviço automaticamente se falhar
     networks:
-      - skynet                             # Conecta à rede 'skynet'
+      - skynet                            # Conecta à rede 'skynet'
+    # ✅ CORREÇÃO: healthcheck garante que o Postgres está PRONTO antes dos outros serviços subirem
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dba -d UserDB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
   # Serviço do PgAdmin para gerenciamento do PostgreSQL
   pgadmin:
@@ -26,9 +33,10 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=dba             # Senha padrão para login
       - TZ=America/Sao_Paulo                     # Fuso horário
     ports:
-      - "15432:80"                              # Mapeamento da porta do PgAdmin
+      - "15432:80"                               # Mapeamento da porta do PgAdmin
     depends_on:
-      - db                                       # Depende do serviço 'db' (PostgreSQL)
+      db:
+        condition: service_healthy               # ✅ CORREÇÃO: espera o Postgres estar saudável
     restart: always
     networks:
       - skynet
@@ -44,6 +52,13 @@ services:
     restart: always
     networks:
       - skynet
+    # ✅ CORREÇÃO: healthcheck garante que o Redis está PRONTO antes dos serviços que dependem dele
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
   # Serviço RedisInsight para visualização e gerenciamento do Redis
   redis-insight:
@@ -54,7 +69,8 @@ services:
     ports:
       - "5540:5540"           # Mapeamento da porta do RedisInsight
     depends_on:
-      - redis                 # Depende do serviço 'redis'
+      redis:
+        condition: service_healthy               # ✅ CORREÇÃO: espera o Redis estar saudável
     restart: always
     networks:
       - skynet
@@ -67,14 +83,17 @@ services:
     networks:
       - skynet
     depends_on:
-      - db                        # Depende do serviço 'db'
+      db:
+        condition: service_healthy               # ✅ CORREÇÃO: espera o Postgres estar pronto de verdade
+      redis:
+        condition: service_healthy               # ✅ CORREÇÃO: espera o Redis estar pronto de verdade
     environment:
       - DATABASE_URL=postgresql://dba:dba@paybank-db:5432/UserDB    # URL de conexão com o banco de dados
-      - REDIS_HOST=paybank-redis                             # Host do Redis
-      - REDIS_PORT=6379                                      # Porta do Redis
-      - TZ=America/Sao_Paulo                                 # Fuso horário
+      - REDIS_HOST=paybank-redis                                     # Host do Redis
+      - REDIS_PORT=6379                                              # Porta do Redis
+      - TZ=America/Sao_Paulo                                         # Fuso horário
     ports:
-      - "3333:3333"                                           # Mapeamento da porta do serviço
+      - "3333:3333"                                                  # Mapeamento da porta do serviço
     restart: unless-stopped
 
   # Serviço da microservice de e-mail
@@ -85,7 +104,10 @@ services:
     networks:
       - skynet
     depends_on:
-      - paybank-ms-auth         # Depende do serviço 'paybank-ms-auth'
+      redis:
+        condition: service_healthy               # ✅ CORREÇÃO: espera o Redis estar pronto de verdade
+      paybank-ms-auth:
+        condition: service_started               # Aguarda o auth subir (sem healthcheck definido)
     environment:
       - REDIS_HOST=paybank-redis                             # Host do Redis
       - REDIS_PORT=6379                                      # Porta do Redis
@@ -103,7 +125,8 @@ services:
     networks:
       - skynet
     depends_on:
-      - paybank-ms-auth         # Depende do serviço 'paybank-ms-auth'
+      paybank-ms-auth:
+        condition: service_started               # Aguarda o auth subir (sem healthcheck definido)
     environment:
       - TZ=America/Sao_Paulo     # Fuso horário
     ports:
