@@ -18,6 +18,7 @@ pipeline {
             steps {
                 echo 'Executando os Testes E2E'
                 sh 'npx playwright test'
+                allure commandline: 'allure', includeProperties: false, jdk: '', resultPolicy: 'LEAVE_AS_IS', results: [[path: 'allure-results']]
             }
         }
     }

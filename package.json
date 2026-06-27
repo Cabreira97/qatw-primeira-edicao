@@ -10,6 +10,7 @@
   },
   "scripts": {},
   "dependencies": {
+    "allure-commandline": "^2.43.0",
     "allure-playwright": "^3.10.2",
     "bcryptjs": "^3.0.3",
     "bullmq": "^5.79.0",
