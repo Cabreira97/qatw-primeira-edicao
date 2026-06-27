@@ -1,7 +1,7 @@
 import { Queue } from 'bullmq';
 
 const connection = {
-    host: 'localhost',
+    host: 'paybank-redis',
     port: 6379
 }
 
