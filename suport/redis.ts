@@ -18,5 +18,5 @@ export const getJob = async () => {
 }
 
 export const cleanJobs = async () => {
-    await queue.obliterate() //limpa todos os jobs da fila, ou seja, remove todas as mensagens relacionadas à autenticação de dois fatores da fila. Isso é útil para garantir que os testes comecem com uma fila limpa, sem mensagens antigas que possam interferir nos resultados dos testes.
+    await queue.obliterate({force:true}) //limpa todos os jobs da fila, ou seja, remove todas as mensagens relacionadas à autenticação de dois fatores da fila. Isso é útil para garantir que os testes comecem com uma fila limpa, sem mensagens antigas que possam interferir nos resultados dos testes.
 }   
